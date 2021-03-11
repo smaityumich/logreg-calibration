@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from scipy.stats import norm
-import argparse
+import argparse, itertools
 
 
 def logreg_calib(n, s = 1, pi = 0.5, k = 0.5, theta = np.pi/2, penalty = 'l1'):
@@ -96,8 +96,12 @@ def logreg_calib(n, s = 1, pi = 0.5, k = 0.5, theta = np.pi/2, penalty = 'l1'):
 
     def calibration_error1(p):
         n_calibration = 500
-        x1 = norm.ppf(p)/s * np.ones((n_calibration, 1))
-        x2 = norm.ppf(p)/s * np.tan(theta/2) * np.ones((n_calibration, 1))
+        if theta < np.pi :
+            x1 = norm.ppf(p)/s * np.ones((n_calibration, 1))
+            x2 = norm.ppf(p)/s * np.tan(theta/2) * np.ones((n_calibration, 1))
+        else: 
+            x1 = np.zeros((n_calibration, 1))
+            x2 = norm.ppf(p)/s * np.ones((n_calibration, 1))
         x_rest = np.random.normal(size = (n_calibration, d-2))
         x = np.concatenate((x1, x2, x_rest), axis = 1)
         h = (x @ b.reshape((-1, 1))).reshape((-1, ))
@@ -108,6 +112,20 @@ def logreg_calib(n, s = 1, pi = 0.5, k = 0.5, theta = np.pi/2, penalty = 'l1'):
     
     # return
     return [score0, score1], [norm_b, theta0, theta1], [calibration_error0, calibration_error1]
+
+
+
+## parameter grid
+def grid(n_signal = 5, n_pi = 5, n_kappa = 5, n_theta = 5, n_sim = 100):
+    
+    signals = np.logspace(0.5, 5, n_signal)
+    pis = np.linspace(0.1, 0.9, n_pi)
+    kappas = np.logspace(0.1, 10, n_kappa)
+    thetas = np.linspace(0, 1, n_theta) * np.pi
+    penaltys = ['l1', 'l2']
+    iters = range(n_sim)
+
+    return list(itertools.product(signals, pis, kappas, thetas, penaltys, iters))
 
 
 if __name__ == '__main__':
@@ -121,7 +139,7 @@ if __name__ == '__main__':
     parser.add_argument('--pi', dest='pi', type=float, nargs = 1,\
          default = 0.9, help='proportion of group 1')
     parser.add_argument('--k', dest='k', type=float, nargs = 1,\
-         default = 0.5, help='dimension/sample size')
+         default = 0.5, help='overparametrization parameter')
     parser.add_argument('--theta', dest='theta', type=float, nargs = 1,\
          default = 1.57, help='angle between beta0 and beta1 in radian')
     parser.add_argument('--penalty', dest='penalty', type=str, nargs = 1,\

@@ -12,8 +12,8 @@ The arguments are tabulated below.
 | `--n` | Total sample size |
 |`--s` | Signal strength (SNR) |
 |`--pi` | Proportion of group 1 sample |
-| `--k` | Dimension / (sample  size) | 
-| `--theta` | Angle between $\beta_0$ and $\beta_1$ | 
+| `--k` | Overparametrization parameter | 
+| `--theta` | Angle between `beta_0` and `beta_1` | 
 | `--penalty` | Penalty for logistic regression|
 |`--p` | $p$'s for which calibration errors to be calculated | 
 
