@@ -1,1 +1,1 @@
-{'n_signal': 5, 'n_pi': 5, 'n_kappa': 10, 'n_theta': 5, 'n_sim': 100}
+{'n_signal': 2, 'n_pi': 2, 'n_kappa': 2, 'n_theta': 2, 'n_sim': 2}
