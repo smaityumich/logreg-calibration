@@ -26,7 +26,7 @@ for job in range(n_jobs):
     if job < (n_jobs - 1):
         job_string += f'#SBATCH --array=0-4999\n'
     else: 
-        job_string += f'#SBATCH --array=0-{last_array_size}\n'
+        job_string += f'#SBATCH --array=0-{last_array_size-1}\n'
     job_string += f'#SBATCH --nodes=1\n#SBATCH --cpus-per-task=1\n#SBATCH --mem-per-cpu=6gb\n'
     job_string += f'#SBATCH --time=1:00:00\n#SBATCH --account=yuekai1\n#SBATCH --mail-type=NONE\n'
     job_string += f'#SBATCH --mail-user=smaity@umich.edu\n#SBATCH --partition=standard\n'
