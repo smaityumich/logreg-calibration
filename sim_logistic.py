@@ -93,16 +93,15 @@ def logreg_calib(n, s = 1, pi = 0.5, k = 0.5, theta = np.pi/2, penalty = 'l1'):
 
 
 ## parameter grid
-def grid(n_signal = 5, n_pi = 5, n_kappa = 5, n_theta = 5, n_sim = 100):
+def grid(n_signal = 5, n_pi = 5, n_kappa = 5, n_theta = 5):
     
     signals = np.logspace(-1, 0, n_signal) * 5
     pis = np.linspace(0.1, 0.9, n_pi)
     kappas = np.logspace(-1, 1, n_kappa)
     thetas = np.linspace(0, 1, n_theta) * np.pi
     penaltys = ['l1', 'l2']
-    iters = range(n_sim)
 
-    return list(itertools.product(signals, pis, kappas, thetas, penaltys, iters))
+    return list(itertools.product(signals, pis, kappas, thetas, penaltys))
 
 
 if __name__ == '__main__':

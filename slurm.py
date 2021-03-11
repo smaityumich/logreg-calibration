@@ -9,7 +9,7 @@ with open('parms.txt', 'r') as f:
 
 pars = eval(pars)
 parameters = grid(n_signal = pars['n_signal'], n_pi = pars['n_pi'],\
-     n_kappa = pars['n_kappa'], n_theta = pars['n_theta'], n_sim = pars['n_sim'])
+     n_kappa = pars['n_kappa'], n_theta = pars['n_theta'])
 
 n_sims = len(parameters)
 n_jobs = int(n_sims / 5000) + 1
