@@ -6,29 +6,6 @@ import argparse, itertools
 
 def logreg_calib(n, s = 1, pi = 0.5, k = 0.5, theta = np.pi/2, penalty = 'l1'):
     
-
-    # input sanitization
-    if type(n) != int or n < 0:
-        raise ValueError('n must be non-negative integer.\n')
-
-    if type(s) != float or s <= 0:
-        raise ValueError('s must be positive number.\n')
-
-    if type(pi) != float or pi < 0 or pi > 1 :
-        raise ValueError('pi must be in [0, 1].\n')
-
-    if type(k) != float or k <= 0:
-        raise ValueError('k must be positive number.\n')
-
-
-    if type(theta) != float or theta < 0 or theta > np.pi :
-        raise ValueError('pi must be in [0, np.pi].\n')
-
-    if penalty not in {'l1', 'l2'}:
-        raise ValueError('Not implemented for ' + penalty + ' penalty.\n')
-
-
-
     # parameters 
 
     ## model pars
@@ -118,9 +95,9 @@ def logreg_calib(n, s = 1, pi = 0.5, k = 0.5, theta = np.pi/2, penalty = 'l1'):
 ## parameter grid
 def grid(n_signal = 5, n_pi = 5, n_kappa = 5, n_theta = 5, n_sim = 100):
     
-    signals = np.logspace(0.5, 5, n_signal)
+    signals = np.logspace(-1, 0, n_signal) * 5
     pis = np.linspace(0.1, 0.9, n_pi)
-    kappas = np.logspace(0.1, 10, n_kappa)
+    kappas = np.logspace(-1, 1, n_kappa)
     thetas = np.linspace(0, 1, n_theta) * np.pi
     penaltys = ['l1', 'l2']
     iters = range(n_sim)
