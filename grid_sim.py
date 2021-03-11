@@ -28,13 +28,14 @@ if i <= n_sims:
     return_dict['norm-beta-hat'] = norm_b
     return_dict['theta0'] = theta0
     return_dict['theta1'] = theta1
+    return_dict['grid-task-no'] = i
     return_dict['job-id'] = os.getenv('SLURM_JOBID')
-    return_dict['job-array-id'] = os.getenv('SLURM_ARRAY_JOB_ID')
+    return_dict['job-array-id'] = os.getenv('SLURM_ARRAY_TASK_ID')
     return_dict['calib-error-0'] = [ce0(p) for p in ps]
     return_dict['calib-error-1'] = [ce1(p) for p in ps]
     filename = f'SNR_{s}_pi_{pi}_k_{k}_theta_{theta}_pen_{penalty}_iter_{ITER}.txt'
     with open('out/'+filename, 'w') as f:
-        f.writelines(str(return_dict))
+        f.writelines(str(return_dict)+'\n')
 else:
     print('Job out of bound.\n')
 
