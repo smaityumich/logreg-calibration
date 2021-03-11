@@ -1,10 +1,33 @@
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from scipy.stats import norm
+import argparse
 
 
-def sim(n, s = 1, pi = 0.5, k = 0.5, theta = np.pi/2, penalty = 'l1'):
+def logreg_calib(n, s = 1, pi = 0.5, k = 0.5, theta = np.pi/2, penalty = 'l1'):
     
+
+    # input sanitization
+    if type(n) != int or n < 0:
+        raise ValueError('n must be non-negative integer.\n')
+
+    if type(s) != float or s <= 0:
+        raise ValueError('s must be positive number.\n')
+
+    if type(pi) != float or pi < 0 or pi > 1 :
+        raise ValueError('pi must be in [0, 1].\n')
+
+    if type(k) != float or k <= 0:
+        raise ValueError('k must be positive number.\n')
+
+
+    if type(theta) != float or theta < 0 or theta > np.pi :
+        raise ValueError('pi must be in [0, np.pi].\n')
+
+    if penalty not in {'l1', 'l2'}:
+        raise ValueError('Not implemented for ' + penalty + ' penalty.\n')
+
+
 
     # parameters 
 
@@ -85,4 +108,57 @@ def sim(n, s = 1, pi = 0.5, k = 0.5, theta = np.pi/2, penalty = 'l1'):
     
     # return
     return [score0, score1], [norm_b, theta0, theta1], [calibration_error0, calibration_error1]
+
+
+if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser(description='Arguments for logreg-calibration')
+
+    parser.add_argument('--n', dest='n', type=int, nargs = 1,\
+         default = 5000, help='total sample size')
+    parser.add_argument('--s', dest='s', type=float, nargs = 1,\
+         default = 2, help='signal strength')
+    parser.add_argument('--pi', dest='pi', type=float, nargs = 1,\
+         default = 0.9, help='proportion of group 1')
+    parser.add_argument('--k', dest='k', type=float, nargs = 1,\
+         default = 0.5, help='dimension/sample size')
+    parser.add_argument('--theta', dest='theta', type=float, nargs = 1,\
+         default = 1.57, help='angle between beta0 and beta1 in radian')
+    parser.add_argument('--penalty', dest='penalty', type=str, nargs = 1,\
+         default = 'l1', help='penalty for logistic regression')
+    parser.add_argument('--p', dest = 'p', type = float, nargs = '*',\
+         default = [0.5], help = 'original calibration')
+
+    args = parser.parse_args()
+    n = args.n
+    s = args.s
+    pi = args.pi
+    k = args.k
+    theta = args.theta
+    penalty = args.penalty
+
+
+    [score0, score1], [norm_b, theta0, theta1], [ce0, ce1] =\
+         logreg_calib(n = n, s = s, pi = pi, k = k, theta = theta, penalty = penalty)
+    
+    print('\n'+'-' * 100 + '\n')
+    print(f'Test accuracy of group 0: {score0}\n')
+    print(f'Test accuracy of group 1: {score1}\n'+ '-' * 100 + '\n')
+
+    print(f'Norm of estimated coefficient vector: {norm_b}\n')
+    print(f'Angle (radian) between estimated coefficient vector and beta_0: {theta0}\n')
+    print(f'Angle (radian) between estimated coefficient vector and beta_1: {theta1}\n'+ '-' * 100 + '\n')
+
+    for p in args.p:
+        print(f'For p = {p} ')
+        print(f'calibration error\n' + '-' * 30 + '\n') 
+        print(f'Group 0: {ce0(p)}\n')
+        print(f'Group 1: {ce1(p)}\n'+ '-' * 50 + '\n')
+
+    print('-' * 100 + '\n')
+
+
+
+    
+
 
