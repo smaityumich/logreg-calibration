@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=sim-cal
 #SBATCH --output=logs/osim_%A_%a.out
-#SBATCH --array=0-1249
+#SBATCH --array=0-3749
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=6gb

@@ -5,7 +5,7 @@ import subprocess
 import os, sys
 
 
-n = 10000
+n = 1000
 ps = np.linspace(0.1, 0.9, 9)
 
 with open('parms.txt', 'r') as f:
@@ -14,6 +14,7 @@ with open('parms.txt', 'r') as f:
 pars = eval(pars)
 parameters = grid(n_signal = pars['n_signal'], n_pi = pars['n_pi'],\
      n_kappa = pars['n_kappa'], n_theta = pars['n_theta'])
+n = pars['n']
 
 i = int(float(sys.argv[1]))
 n_sims = len(parameters)

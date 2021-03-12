@@ -31,6 +31,8 @@ def logreg_calib(n, s = 1, pi = 0.5, k = 0.5, theta = np.pi/2, penalty = 'l1'):
         regularizer = sigma * np.sqrt(np.log(d)/n)
     elif penalty == 'l2':
         regularizer = sigma ** 2 * np.log(d)/n
+    elif penalty == 'none':
+        regularizer = 1
     else: 
         raise ValueError('Not implemented for ' + penalty + '.\n')
 
@@ -38,6 +40,8 @@ def logreg_calib(n, s = 1, pi = 0.5, k = 0.5, theta = np.pi/2, penalty = 'l1'):
     if penalty == 'l1':
         solver = 'liblinear'
     elif penalty == 'l2':
+        solver = 'lbfgs'
+    elif penalty == 'none':
         solver = 'lbfgs'
     else: 
         raise ValueError('Not implemented for ' + penalty + '.\n')
@@ -87,9 +91,9 @@ def grid(n_signal = 5, n_pi = 5, n_kappa = 5, n_theta = 5):
     
     signals = np.logspace(-1, 0, n_signal) * 5
     pis = np.linspace(0.1, 0.9, n_pi)
-    kappas = np.logspace(-1, 1, n_kappa)
+    kappas = np.logspace(-1, 1, n_kappa)/2
     thetas = np.linspace(0, 1, n_theta) * np.pi
-    penaltys = ['l1', 'l2']
+    penaltys = ['l1', 'l2', 'none']
 
     return list(itertools.product(signals, pis, kappas, thetas, penaltys))
 

@@ -66,6 +66,8 @@ def plot(df, xaxis = 'k', pi = 0.1, k = 0.05, s = 0.5, theta = np.pi/4,\
         plt.legend(lines, labels)
         plt.xlabel(xaxis, size = 'large')
         plt.ylabel('$p - P_{'+str(g)+ r'}[Y = 1\| \hat f(X) = p ]$')
+        if xaxis in ['s', 'k']:
+            plt.xscale('log')
 
 
 
@@ -88,6 +90,8 @@ def plot(df, xaxis = 'k', pi = 0.1, k = 0.05, s = 0.5, theta = np.pi/4,\
             labels.append(f'g = {g}')
         plt.legend(lines, labels, title = measure)
         plt.xlabel(xaxis, size = 'large')
+        if xaxis in ['s', 'k']:
+            plt.xscale('log')
         if measure == 'score':
             plt.ylabel(f'Test accuracy')
         else:
