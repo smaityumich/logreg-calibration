@@ -91,7 +91,7 @@ def grid(n_signal = 5, n_pi = 5, n_kappa = 5, n_theta = 5):
     
     signals = np.logspace(-1, 0, n_signal) * 5
     pis = np.linspace(0.1, 0.9, n_pi)
-    kappas = np.logspace(-1, 1, n_kappa)/2
+    kappas = np.logspace(-1, 1, n_kappa, base = 4)
     thetas = np.linspace(0, 1, n_theta) * np.pi
     penaltys = ['l1', 'l2', 'none']
 
