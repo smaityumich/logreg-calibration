@@ -1,8 +1,15 @@
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from scipy.stats import norm
-import argparse, itertools
+import argparse, itertools, functools
 
+
+def calib_error(p, norm_b, theta, s):
+
+    z = np.random.normal(size = (100, ))
+    calib = (s/norm_b) * np.cos(theta) * (p/(1-p)) + s * np.sin(theta) * z
+    calib = 1/(1+np.exp(-calib))
+    return p - np.mean(calib)
 
 def logreg_calib(n, s = 1, pi = 0.5, k = 0.5, theta = np.pi/2, penalty = 'l1'):
     
@@ -39,14 +46,18 @@ def logreg_calib(n, s = 1, pi = 0.5, k = 0.5, theta = np.pi/2, penalty = 'l1'):
     x0, x1 = np.random.normal(size = (n0, d)), np.random.normal(size = (n1, d))
     h0, h1 = x0 @ beta0.reshape((-1, 1)) + sigma * np.random.normal(size = (n0, 1)),\
          x1 @ beta1.reshape((-1, 1)) + sigma * np.random.normal(size = (n1, 1))
-    y0, y1 = (h0.reshape((-1, )) > 0).astype('float32'), (h1.reshape((-1, )) > 0).astype('float32')
+    h0, h1 = h0.reshape((-1, )), h1.reshape((-1, ))
+    p0, p1 = 1/(1+np.exp(-h0)), 1/(1+np.exp(-h1))
+    y0, y1 = np.random.binomial(1, p0, size = (n0, )), np.random.binomial(1, p1, size = (n1, ))
     x_train, y_train = np.concatenate((x0, x1), axis = 0), np.concatenate((y0, y1))
 
     x0_test, x1_test = np.random.normal(size = (n_test, d)), np.random.normal(size = (n_test, d))
     h0_test, h1_test = x0_test @ beta0.reshape((-1, 1)) + sigma * np.random.normal(size = (n_test, 1)),\
          x1_test @ beta1.reshape((-1, 1)) + sigma * np.random.normal(size = (n_test, 1))
-    y0_test, y1_test = (h0_test.reshape((-1, )) > 0).astype('float32'),\
-         (h1_test.reshape((-1, )) > 0).astype('float32')
+    h0_test, h1_test = h0_test.reshape((-1, )), h1_test.reshape((-1, ))
+    p0_test, p1_test = 1/(1+np.exp(-h0_test)), 1/(1+np.exp(-h1_test))
+    y0_test, y1_test = np.random.binomial(1, p0_test, size = (n_test, )),\
+     np.random.binomial(1, p1_test, size = (n_test, ))
 
     # model 
     cl = LogisticRegression(penalty = penalty, C = 1/regularizer, fit_intercept = False, solver = solver)
@@ -63,30 +74,9 @@ def logreg_calib(n, s = 1, pi = 0.5, k = 0.5, theta = np.pi/2, penalty = 'l1'):
 
     ## calibration error
 
-    def calibration_error0(p):
-        n_calibration = 500
-        x1 = norm.ppf(p)/s * np.ones((n_calibration, 1))
-        x_rest = np.random.normal(size = (n_calibration, d-1))
-        x = np.concatenate((x1, x_rest), axis = 1)
-        h = (x @ b.reshape((-1, 1))).reshape((-1, ))
-        return p - np.mean((1 / (1 + np.exp(-h))))
+    calibration_error0 = functools.partial(calib_error, norm_b = norm_b, theta = theta0, s = s)
+    calibration_error1 = functools.partial(calib_error, norm_b = norm_b, theta = theta1, s = s)
 
-    def calibration_error1(p):
-        n_calibration = 500
-        if theta < np.pi :
-            x1 = norm.ppf(p)/s * np.ones((n_calibration, 1))
-            x2 = norm.ppf(p)/s * np.tan(theta/2) * np.ones((n_calibration, 1))
-        else: 
-            x1 = np.zeros((n_calibration, 1))
-            x2 = norm.ppf(p)/s * np.ones((n_calibration, 1))
-        x_rest = np.random.normal(size = (n_calibration, d-2))
-        x = np.concatenate((x1, x2, x_rest), axis = 1)
-        h = (x @ b.reshape((-1, 1))).reshape((-1, ))
-        return p - np.mean((1 / (1 + np.exp(-h))))
-
-        
-
-    
     # return
     return [score0, score1], [norm_b, theta0, theta1], [calibration_error0, calibration_error1]
 
